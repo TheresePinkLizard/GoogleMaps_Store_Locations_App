@@ -55,6 +55,10 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         executor = Executors.newSingleThreadExecutor();
         makeWebServiceRequest();
 
+        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
+                .findFragmentById(R.id.map);
+        mapFragment.getMapAsync(this);
+
     }
 
     public void onMapReady(GoogleMap googleMap) {
