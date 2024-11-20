@@ -1,0 +1,6 @@
+<resources>
+    <!-- Application theme -->
+    <style name="Theme.Kart" parent="Theme.AppCompat.Light.DarkActionBar">
+        <!-- Customize your theme here -->
+   </style>
+</resources>
