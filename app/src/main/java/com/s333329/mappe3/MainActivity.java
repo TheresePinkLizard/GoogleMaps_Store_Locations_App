@@ -3,6 +3,8 @@ package com.s333329.mappe3;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -51,25 +53,77 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
-        handler = new Handler(Looper.getMainLooper());
+        handler = new Handler();
         executor = Executors.newSingleThreadExecutor();
-        makeWebServiceRequest();
+        Button button = findViewById(R.id.knapp);
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                makeHttpRequest();
+            }
+        });
 
+        // code for map
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
-
     }
 
+    // code for map
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
         // Add a marker in Sydney and move the camera
         LatLng sydney = new LatLng(-34, 151);
-        mMap.addMarker(new
-                MarkerOptions().position(sydney).title("Marker in Sydney"));
+        mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in SydneyTest"));
         mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
     }
+    // send data to server
+    private void makeHttpRequest() {
+        executor.execute(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    URL url = new URL("https://maps.googleapis.com/maps/api/geocode/json?address=Bergen"
+                            + "&key=AIzaSyDo1iNp71Yynw1L_0diIi8QylFhkc-ke7w");
+                    HttpURLConnection httpUrlConnection = (HttpURLConnection) url.openConnection();
+                    httpUrlConnection.setRequestMethod("GET");
+                    httpUrlConnection.connect();
+                    int responseCode = httpUrlConnection.getResponseCode();
+                    if (responseCode == HttpURLConnection.HTTP_OK) {
+                        InputStream inputStream = httpUrlConnection.getInputStream();
+                        String response = readInputStreamToString(inputStream);
+                        handler.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                TextView textView = findViewById(R.id.textView);
+                                textView.setText(response);
+                            }
+                        });
+                    } else {
+                        handler.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                Toast.makeText(MainActivity.this, "Error: " + responseCode,
+                                        Toast.LENGTH_SHORT).show();
+                            }
+                        });
+                    }
+                } catch (Exception e) {
+                    handler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            Toast.makeText(MainActivity.this, "Error: " + e.getMessage(),
+                                    Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                }
+            }
+        });
+    }
 
+
+
+// Retrieves from database
     private void makeWebServiceRequest() {
         executor.execute(new Runnable() {
             @Override
@@ -87,6 +141,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
 
                     if (responseCode == HttpURLConnection.HTTP_OK) {
                         InputStream inputStream = httpUrlConnection.getInputStream();
+                        // calls method to covert to string
                         String response = readInputStreamToString(inputStream);
 
                         Log.i("DataRetrieval", "Response from server: " + response);
@@ -119,6 +174,10 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
             }
         });
     }
+
+    // post to database
+
+
     private String readInputStreamToString(InputStream inputStream) throws IOException {
         BufferedReader reader = new BufferedReader(new
                 InputStreamReader(inputStream));
