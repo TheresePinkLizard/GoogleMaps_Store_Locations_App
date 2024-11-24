@@ -67,6 +67,8 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
+
+        makeWebServiceRequest();
     }
 
     // code for map
@@ -121,8 +123,6 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         });
     }
 
-
-
 // Retrieves from database
     private void makeWebServiceRequest() {
         executor.execute(new Runnable() {
@@ -174,10 +174,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
             }
         });
     }
-
     // post to database
-
-
     private String readInputStreamToString(InputStream inputStream) throws IOException {
         BufferedReader reader = new BufferedReader(new
                 InputStreamReader(inputStream));
@@ -187,7 +184,6 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
             stringBuilder.append(line);
         }
         reader.close();
-
 
         String lest = stringBuilder.toString();
         String retur = "";
@@ -208,6 +204,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
             return "Noe gikk feil" + e;
         }
     }
+
 }
 
 
