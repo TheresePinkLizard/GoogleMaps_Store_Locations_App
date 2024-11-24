@@ -102,6 +102,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
 
+        mMap.getUiSettings().setZoomControlsEnabled(true);
         /* Add a marker in Sydney and move the camera
         LatLng sydney = new LatLng(-34, 151);
         mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in SydneyTest"));
@@ -124,12 +125,26 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                     latitude.setText(String.valueOf(point.latitude));
                     longitude.setText(String.valueOf(point.longitude));
 
-                    mMap.addMarker(new MarkerOptions().position(point).title("description").snippet(add));
-                    mMap.moveCamera(CameraUpdateFactory.newLatLng(point));
+                    // Get the current zoom level
+                    float currentZoomLevel = mMap.getCameraPosition().zoom;
+
+                    String locationDescription = "No added description"; // Default description
+                    for (Location location : locations){
+                        if (Math.abs(location.latitude - point.latitude) < 0.000001 && Math.abs(location.longitude - point.longitude) < 0.000001) {
+                            // If the latitudes and longitudes are similar, description is added in view
+                            mMap.addMarker(new MarkerOptions().position(point).title(location.description).snippet(add));
+                            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(point, currentZoomLevel));
+                            locationDescription = location.description; // Update the description if a matching location is found
+                        }else{
+                            mMap.addMarker(new MarkerOptions().position(point).title(locationDescription).snippet(add));
+                            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(point, currentZoomLevel));
+                        }
+                    }
+                    description.setText(locationDescription); // Update the description TextView
 
                 } catch (IOException e) {
                     e.printStackTrace();
-                    Log.i("setonmapclick", "could not set textfield");
+                    Log.i("setOnMapClick", "could not set textfield");
                 }
             }
         });
@@ -151,12 +166,13 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                         handler.post(new Runnable() {
                             @Override
                             public void run() {
+                                float zoomLevel = 5.0f;
                                 if(!locations.isEmpty()) {
                                     for (Location location : locations) {
                                         Log.i("","");
                                         LatLng position = location.position;
                                         mMap.addMarker(new MarkerOptions().position(position).title(location.description).snippet(location.address));
-                                        mMap.moveCamera(CameraUpdateFactory.newLatLng(position));
+                                        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(position, zoomLevel));
                                         addresse.setText(location.address);
                                         latitude.setText(String.valueOf(location.latitude));
                                         longitude.setText(String.valueOf(location.longitude));
