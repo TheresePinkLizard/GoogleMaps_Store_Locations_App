@@ -131,23 +131,34 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                     String locationDescription = "No added description"; // Default description
                     for (Location location : locations){
                         if (Math.abs(location.latitude - point.latitude) < 0.000001 && Math.abs(location.longitude - point.longitude) < 0.000001) {
-                            // If the latitudes and longitudes are similar, description is added in view
-                            mMap.addMarker(new MarkerOptions().position(point).title(location.description).snippet(add));
-                            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(point, currentZoomLevel));
                             locationDescription = location.description; // Update the description if a matching location is found
-                        }else{
-                            mMap.addMarker(new MarkerOptions().position(point).title(locationDescription).snippet(add));
-                            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(point, currentZoomLevel));
                         }
                     }
                     description.setText(locationDescription); // Update the description TextView
+
+                    // Move the camera to the clicked point and add a new marker at the clicked point
+                    mMap.addMarker(new MarkerOptions().position(point).title("Clicked Point"));
+                    mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(point, currentZoomLevel));
 
                 } catch (IOException e) {
                     e.printStackTrace();
                     Log.i("setOnMapClick", "could not set textfield");
                 }
+
+                // Add this line to display the stored locations again
+                displayLocationsOnMap();
             }
         });
+    }
+
+    private void displayLocationsOnMap() {
+        // Display all pins from 'locations' on the map
+        if (mMap != null && locations != null) {
+            for (Location location : locations) {
+                LatLng position = location.position;
+                mMap.addMarker(new MarkerOptions().position(position).title(location.description).snippet(location.address));
+            }
+        }
     }
     // retrieve data
     private void makeHttpRequest() {
@@ -178,6 +189,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                                         longitude.setText(String.valueOf(location.longitude));
                                         description.setText(location.description);
                                     }
+                                    displayLocationsOnMap();
                                 }
                             }
                         });
