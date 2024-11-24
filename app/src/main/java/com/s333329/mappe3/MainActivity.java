@@ -1,12 +1,15 @@
 package com.s333329.mappe3;
 
+import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Color;
 import android.location.Address;
 import android.location.Geocoder;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -128,7 +131,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                     // Get the current zoom level
                     float currentZoomLevel = mMap.getCameraPosition().zoom;
 
-                    String locationDescription = "No added description"; // Default description
+                    String locationDescription = ""; // Default description
                     for (Location location : locations){
                         if (Math.abs(location.latitude - point.latitude) < 0.000001 && Math.abs(location.longitude - point.longitude) < 0.000001) {
                             locationDescription = location.description; // Update the description if a matching location is found
@@ -240,14 +243,28 @@ private void makeWebServiceRequest(String theaddress, double thelatitude, double
                 out.flush();
                 out.close();
 
+                TextView status = findViewById(R.id.savedStatus);
+
                 int responseCode = httpUrlConnection.getResponseCode();
                 if (responseCode == HttpURLConnection.HTTP_OK) {
                     // The request was successful
+                    status.setText("Your location is stored on server");
+                    status.setTextColor(Color.parseColor("#009000"));
+                    makeHttpRequest();
                     // Handle the server's response here if needed
                 } else {
                     // The request failed
+                    status.setText("Failed storing location to server");
+                    status.setTextColor(Color.RED);
                     throw new Exception("Server responded with: " + responseCode);
                 }
+                //code to hide keyboard when storing location
+                InputMethodManager inputMethodManager = (InputMethodManager) getSystemService(Activity.INPUT_METHOD_SERVICE);
+                View view = getCurrentFocus();
+                if (view == null) {
+                    view = new View(MainActivity.this);
+                }
+                inputMethodManager.hideSoftInputFromWindow(view.getWindowToken(), 0);
             } catch (Exception e) {
                 // Handle the exception
                 e.printStackTrace();
