@@ -27,6 +27,7 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import org.json.JSONArray;
@@ -150,6 +151,23 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
 
                 // Add this line to display the stored locations again
                 displayLocationsOnMap();
+            }
+        });
+        // code to update the textfields if one selects a place on server
+        mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+            @Override
+            public boolean onMarkerClick(Marker marker) {
+                LatLng position = marker.getPosition();
+                for (Location location : locations) {
+                    if (Math.abs(location.latitude - position.latitude) < 0.000001 && Math.abs(location.longitude - position.longitude) < 0.000001) {
+                        addresse.setText(location.address);
+                        latitude.setText(String.valueOf(location.latitude));
+                        longitude.setText(String.valueOf(location.longitude));
+                        description.setText(location.description);
+                        break;
+                    }
+                }
+                return false;
             }
         });
     }
