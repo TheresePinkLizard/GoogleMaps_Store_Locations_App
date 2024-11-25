@@ -61,7 +61,6 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
     TextView longitude;
     TextView description;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -157,6 +156,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
             @Override
             public boolean onMarkerClick(Marker marker) {
+
                 LatLng position = marker.getPosition();
                 for (Location location : locations) {
                     if (Math.abs(location.latitude - position.latitude) < 0.000001 && Math.abs(location.longitude - position.longitude) < 0.000001) {
