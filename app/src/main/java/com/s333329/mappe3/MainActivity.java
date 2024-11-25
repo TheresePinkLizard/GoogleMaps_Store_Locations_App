@@ -74,6 +74,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         handler = new Handler();
         executor = Executors.newSingleThreadExecutor();
 
+        // importing views
         addresse = findViewById(R.id.addressTextview);
         latitude = findViewById(R.id.latitudeTextview);
         longitude = findViewById(R.id.longitudeTextview);
@@ -85,8 +86,10 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
+        // retrieve data from server
         makeHttpRequest();
 
+        // save button for sending to server
         Button save = findViewById(R.id.button);
         save.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -106,12 +109,6 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         mMap = googleMap;
 
         mMap.getUiSettings().setZoomControlsEnabled(true);
-        /* Add a marker in Sydney and move the camera
-        LatLng sydney = new LatLng(-34, 151);
-        mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in SydneyTest"));
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
-
-         */
 
         mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
             @Override
@@ -120,6 +117,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                 Geocoder geocoder = new Geocoder(MainActivity.this, Locale.getDefault());
 
                 try {
+                    // Retrieve the address using geocoder
                     List<Address> addresses = geocoder.getFromLocation(point.latitude, point.longitude, 1);
                     Address obj = addresses.get(0);
                     String add = obj.getAddressLine(0);
@@ -131,7 +129,8 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                     // Get the current zoom level
                     float currentZoomLevel = mMap.getCameraPosition().zoom;
 
-                    String locationDescription = ""; // Default description
+                    // code to store description and display it
+                    String locationDescription = "";
                     for (Location location : locations){
                         if (Math.abs(location.latitude - point.latitude) < 0.000001 && Math.abs(location.longitude - point.longitude) < 0.000001) {
                             locationDescription = location.description; // Update the description if a matching location is found
@@ -148,7 +147,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                     Log.i("setOnMapClick", "could not set textfield");
                 }
 
-                // Add this line to display the stored locations again
+                // Display the stored locations
                 displayLocationsOnMap();
             }
         });
@@ -171,7 +170,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
             }
         });
     }
-
+    // code for displaying locations in list on the map
     private void displayLocationsOnMap() {
         // Display all pins from 'locations' on the map
         if (mMap != null && locations != null) {
@@ -181,7 +180,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
             }
         }
     }
-    // retrieve data
+    // Retrieve data from server
     private void makeHttpRequest() {
         executor.execute(new Runnable() {
             @Override
@@ -200,6 +199,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                             public void run() {
                                 float zoomLevel = 5.0f;
                                 if(!locations.isEmpty()) {
+                                    // Adding markers and updating textfields
                                     for (Location location : locations) {
                                         Log.i("","");
                                         LatLng position = location.position;
