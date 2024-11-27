@@ -60,6 +60,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
     TextView latitude;
     TextView longitude;
     TextView description;
+    TextView feedback;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -79,6 +80,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         latitude = findViewById(R.id.latitudeTextview);
         longitude = findViewById(R.id.longitudeTextview);
         description = findViewById(R.id.editTextDescription);
+        feedback = findViewById(R.id.savedStatus);
 
 
         // code for map
@@ -141,10 +143,16 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                     // Move the camera to the clicked point and add a new marker at the clicked point
                     mMap.addMarker(new MarkerOptions().position(point).title("Clicked Point"));
                     mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(point, currentZoomLevel));
+                    feedback.setText("");
 
                 } catch (IOException e) {
                     e.printStackTrace();
                     Log.i("setOnMapClick", "could not set textfield");
+                } catch (IndexOutOfBoundsException e) {
+                    e.printStackTrace();
+                    Log.i("setOnMapClick", "addresses list is empty");
+                    feedback.setText("Select a place with a address");
+                    feedback.setTextColor(Color.RED);
                 }
 
                 // Display the stored locations
@@ -261,19 +269,17 @@ private void makeWebServiceRequest(String theaddress, double thelatitude, double
                 out.flush();
                 out.close();
 
-                TextView status = findViewById(R.id.savedStatus);
-
                 int responseCode = httpUrlConnection.getResponseCode();
                 if (responseCode == HttpURLConnection.HTTP_OK) {
                     // The request was successful
-                    status.setText("Your location is stored on server");
-                    status.setTextColor(Color.parseColor("#009000"));
+                    feedback.setText("Your location is stored on server");
+                    feedback.setTextColor(Color.parseColor("#009000"));
                     makeHttpRequest();
                     // Handle the server's response here if needed
                 } else {
                     // The request failed
-                    status.setText("Failed storing location to server");
-                    status.setTextColor(Color.RED);
+                    feedback.setText("Failed storing location to server");
+                    feedback.setTextColor(Color.RED);
                     throw new Exception("Server responded with: " + responseCode);
                 }
                 //code to hide keyboard when storing location
