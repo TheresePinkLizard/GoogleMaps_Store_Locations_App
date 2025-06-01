@@ -296,7 +296,7 @@ private void makeWebServiceRequest(String theaddress, double thelatitude, double
         }
     });
 }
-    // post to database
+    // convert from json to a list
     private List<Location> readInputStreamToString(InputStream inputStream) throws IOException {
         BufferedReader reader = new BufferedReader(new
                 InputStreamReader(inputStream));
